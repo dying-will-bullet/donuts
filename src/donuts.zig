@@ -9,12 +9,14 @@ pub const Error = error{
 
 pub const Options = struct {
     // TODO:
-    placement: union(enum) {
-        left: void,
-        right: struct {},
-    } = .left,
+    // placement: union(enum) {
+    //     left: void,
+    //     right: struct {},
+    // } = .left,
     /// sep between spinner and message
     sep: []const u8 = " ",
+    spinner_style: ?AnsiStyle = null,
+    message_style: ?AnsiStyle = null,
 };
 
 /// `stream` is `std.io.getStdOut` or `std.io.getStdErr`
@@ -47,6 +49,7 @@ pub fn Donuts(comptime stream: anytype) type {
 
         /// Init with builtin style or custom style
         pub fn init(
+            message: []const u8,
             style: union(enum) {
                 style: SpinnerStyle,
                 spinner: struct {
@@ -71,7 +74,7 @@ pub fn Donuts(comptime stream: anytype) type {
             }
 
             return Self{
-                .message = undefined,
+                .message = message,
                 .frames = frames,
                 .frame_rate = @intCast(u64, interval) * time.ns_per_ms,
                 .lock = std.Thread.Mutex{},
@@ -80,25 +83,20 @@ pub fn Donuts(comptime stream: anytype) type {
             };
         }
 
-        pub fn setSep(self: *Self, sep: []const u8) void {
+        pub fn setOptions(self: *Self, options: Options) void {
             self.lock.lock();
             defer self.lock.unlock();
 
-            self.sep = sep;
+            self.sep = options.sep;
+            self.spinner_style = options.spinner_style;
+            self.message_style = options.message_style;
         }
 
         /// Starts the spinner on a separate thread.
-        pub fn start(self: *Self, message: []const u8, options: struct {
-            spinner_style: ?AnsiStyle = null,
-            message_style: ?AnsiStyle = null,
-        }) !void {
-            self.spinner_style = options.spinner_style;
-            self.message_style = options.message_style;
+        pub fn start(self: *Self) !void {
 
             // hide curosr
             try self.hideCursor();
-
-            self.setMessage(message);
 
             self.running_flag.store(true, .SeqCst);
 
