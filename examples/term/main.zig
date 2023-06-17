@@ -3,7 +3,7 @@ const Donuts = @import("donuts").Donuts;
 
 pub fn main() !void {
     var sp = Donuts(std.io.getStdOut()).init(
-        "Scanning fiels...",
+        "Scanning files...",
         .{ .style = .dots },
         .{},
     );
