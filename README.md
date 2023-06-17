@@ -80,6 +80,9 @@ pub fn main() !void {
 
 ![output](https://github.com/dying-will-bullet/donuts/assets/9482395/1f14a0f6-744c-4438-b6c3-69dcfe7b8c20)
 
+![output](https://github.com/dying-will-bullet/donuts/assets/9482395/34cdeab7-8561-4d33-80f5-a20cbde02ccd)
+
+
 ## Installation
 
 ## LICENSE
