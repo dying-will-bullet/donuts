@@ -4,7 +4,7 @@ const pkg_name = "donuts";
 const pkg_path = "../src/lib.zig";
 
 const examples = .{
-    "default",
+    "term",
 };
 
 pub fn build(b: *std.build.Builder) void {
