@@ -49,7 +49,7 @@ pub fn Donuts(comptime stream: anytype) type {
         pub fn init(
             style: union(enum) {
                 style: SpinnerStyle,
-                custom: struct {
+                spinner: struct {
                     interval: u16,
                     frames: []const []const u8,
                 },
@@ -64,7 +64,7 @@ pub fn Donuts(comptime stream: anytype) type {
                     interval = v.data().interval;
                     frames = v.data().frames;
                 },
-                .custom => |v| {
+                .spinner => |v| {
                     interval = v.interval;
                     frames = v.frames;
                 },
