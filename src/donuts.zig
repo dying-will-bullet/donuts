@@ -80,6 +80,8 @@ pub fn Donuts(comptime stream: anytype) type {
                 .lock = std.Thread.Mutex{},
                 .running_flag = std.atomic.Atomic(bool).init(false),
                 .sep = options.sep,
+                .spinner_style = options.spinner_style,
+                .message_style = options.message_style,
             };
         }
 
