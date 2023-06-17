@@ -5,6 +5,10 @@ const pkg_path = "../src/lib.zig";
 
 const examples = .{
     "term",
+    "colored",
+    "custom-spin",
+    "download-progress",
+    "persist-spin",
 };
 
 pub fn build(b: *std.build.Builder) void {
