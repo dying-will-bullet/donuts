@@ -1,9 +1,37 @@
 <h1 align="center"> donuts 🍩 </h1>
 
-Create a project using this template and run following command to replace project name.
+[![CI](https://github.com/dying-will-bullet/donuts/actions/workflows/ci.yaml/badge.svg)](https://github.com/dying-will-bullet/donuts/actions/workflows/ci.yaml)
+![](https://img.shields.io/badge/language-zig-%23ec915c)
 
-```Bash
-find . -type f -exec sed -i "s/donuts/<YOUR PROJECT NAME>/g" {} \;
+Beautiful spinners for terminal.
+
+[![asciicast](https://asciinema.org/a/ZsXLUya4Ot2H1jGCf1e631Y8G.svg)](https://asciinema.org/a/ZsXLUya4Ot2H1jGCf1e631Y8G)
+
+## Examples
+
+```zig
+const std = @import("std");
+const Donuts = @import("donuts").Donuts;
+
+pub fn main() !void {
+    var sp = Donuts(std.io.getStdOut()).init(.{ .style = .dots });
+    try sp.start("Scanning files...");
+
+    std.time.sleep(1 * std.time.ns_per_s);
+    try sp.echoLine("1) build.zig");
+
+    std.time.sleep(1 * std.time.ns_per_s);
+    try sp.echoLine("2) build.zig.zon");
+
+    std.time.sleep(1 * std.time.ns_per_s);
+
+    try sp.echoLine("3) README.md");
+    try sp.stop(.{ .symbol = "✅", .message = "Done" });
+}
 ```
 
-Then [add a license to your project](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository).
+## Installation
+
+## LICENSE
+
+MIT License Copyright (c) 2023, Hanaasagi
