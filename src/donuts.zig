@@ -1,9 +1,20 @@
 const std = @import("std");
 const time = std.time;
-const Style = @import("./style.zig").Style;
+const SpinnerStyle = @import("./style.zig").Style;
+const AnsiStyle = @import("./ansi.zig").Style;
 
-const Error = error{
+pub const Error = error{
     NotStarted,
+};
+
+pub const Options = struct {
+    // TODO:
+    placement: union(enum) {
+        left: void,
+        right: struct {},
+    } = .left,
+    /// sep between spinner and message
+    sep: []const u8 = " ",
 };
 
 /// `stream` is `std.io.getStdOut` or `std.io.getStdErr`
@@ -22,6 +33,12 @@ pub fn Donuts(comptime stream: anytype) type {
         ///
         render_thread: ?std.Thread = null,
 
+        /// sep between spinner and message
+        sep: []const u8,
+
+        spinner_style: ?AnsiStyle = null,
+        message_style: ?AnsiStyle = null,
+
         const Self = @This();
 
         // --------------------------------------------------------------------------------
@@ -29,13 +46,16 @@ pub fn Donuts(comptime stream: anytype) type {
         // --------------------------------------------------------------------------------
 
         /// Init with builtin style or custom style
-        pub fn init(style: union(enum) {
-            style: Style,
-            custom: struct {
-                interval: u16,
-                frames: []const []const u8,
+        pub fn init(
+            style: union(enum) {
+                style: SpinnerStyle,
+                custom: struct {
+                    interval: u16,
+                    frames: []const []const u8,
+                },
             },
-        }) Self {
+            options: Options,
+        ) Self {
             var interval: u16 = undefined;
             var frames: []const []const u8 = undefined;
 
@@ -56,11 +76,25 @@ pub fn Donuts(comptime stream: anytype) type {
                 .frame_rate = @intCast(u64, interval) * time.ns_per_ms,
                 .lock = std.Thread.Mutex{},
                 .running_flag = std.atomic.Atomic(bool).init(false),
+                .sep = options.sep,
             };
         }
 
+        pub fn setSep(self: *Self, sep: []const u8) void {
+            self.lock.lock();
+            defer self.lock.unlock();
+
+            self.sep = sep;
+        }
+
         /// Starts the spinner on a separate thread.
-        pub fn start(self: *Self, message: []const u8) !void {
+        pub fn start(self: *Self, message: []const u8, options: struct {
+            spinner_style: ?AnsiStyle = null,
+            message_style: ?AnsiStyle = null,
+        }) !void {
+            self.spinner_style = options.spinner_style;
+            self.message_style = options.message_style;
+
             // hide curosr
             try self.hideCursor();
 
@@ -75,9 +109,14 @@ pub fn Donuts(comptime stream: anytype) type {
         pub fn stop(self: *Self, config: struct {
             symbol: ?[]const u8 = null,
             message: ?[]const u8 = null,
+            symbol_style: ?AnsiStyle = null,
+            message_style: ?AnsiStyle = null,
         }) !void {
-            if (self.render_thread == null) {
+            if (!self.running_flag.load(.SeqCst)) {
                 return error.NotStarted;
+            }
+            if (self.render_thread == null) {
+                unreachable;
             }
 
             // stop and wait render thread
@@ -90,9 +129,30 @@ pub fn Donuts(comptime stream: anytype) type {
             // write final message
             try self.clear();
             try stream.writeAll("\r");
-            try stream.writeAll(config.symbol orelse self.frames[0]);
-            try stream.writeAll(" ");
-            try stream.writeAll(config.message orelse self.message);
+
+            var buf: [16]u8 = undefined;
+            if (config.symbol_style) |style| {
+                const s = try style.toAnsi(&buf);
+
+                try stream.writeAll(s);
+                try stream.writeAll(config.symbol orelse self.frames[0]);
+                try stream.writeAll("\x1b[0m");
+            } else {
+                try stream.writeAll(config.symbol orelse self.frames[0]);
+            }
+
+            try stream.writeAll(self.sep);
+
+            if (config.message_style) |style| {
+                const s = try style.toAnsi(&buf);
+
+                try stream.writeAll(s);
+                try stream.writeAll(config.message orelse self.message);
+                try stream.writeAll("\x1b[0m");
+            } else {
+                try stream.writeAll(config.message orelse self.message);
+            }
+
             try stream.writeAll("\n");
         }
 
@@ -105,13 +165,19 @@ pub fn Donuts(comptime stream: anytype) type {
         }
 
         /// Write text to stream.
-        pub fn echoLine(self: *Self, text: []const u8) !void {
+        pub fn echoLine(self: *Self, text: []const u8, style: AnsiStyle) !void {
             self.lock.lock();
             defer self.lock.unlock();
 
             try self.clear();
 
+            var buf: [16]u8 = undefined;
+            const s = try style.toAnsi(&buf);
+
+            try stream.writeAll(s);
             try stream.writeAll(text);
+            try stream.writeAll("\x1b[0m");
+
             try stream.writeAll("\n");
         }
 
@@ -143,9 +209,29 @@ pub fn Donuts(comptime stream: anytype) type {
             defer self.lock.unlock();
 
             try self.clear();
-            try stream.writeAll(self.frames[idx]);
-            try stream.writeAll(" ");
-            try stream.writeAll(self.message);
+
+            var buf: [16]u8 = undefined;
+            if (self.spinner_style) |style| {
+                const s = try style.toAnsi(&buf);
+
+                try stream.writeAll(s);
+                try stream.writeAll(self.frames[idx]);
+                try stream.writeAll("\x1b[0m");
+            } else {
+                try stream.writeAll(self.frames[idx]);
+            }
+
+            try stream.writeAll(self.sep);
+
+            if (self.message_style) |style| {
+                const s = try style.toAnsi(&buf);
+
+                try stream.writeAll(s);
+                try stream.writeAll(self.message);
+                try stream.writeAll("\x1b[0m");
+            } else {
+                try stream.writeAll(self.message);
+            }
             try stream.writeAll("\r");
         }
 
