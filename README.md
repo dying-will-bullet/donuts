@@ -5,6 +5,11 @@
 
 Beautiful spinners for terminal.
 
+## Features
+
+- 75 built-in spinners.
+- Supports ANSI Color.
+
 ## Tutorial
 
 ### Create a spinner with a text message.
@@ -120,6 +125,48 @@ pub fn main() !void {
 ![output](https://github.com/dying-will-bullet/donuts/assets/9482395/4fc15a13-e57d-45b3-b211-978974b091cd)
 
 ## Installation
+
+Add `donuts` as dependency in `build.zig.zon`:
+
+```
+.{
+    .name = "my-project",
+    .version = "0.1.0",
+    .dependencies = .{
+       .donuts = .{
+           .url = "https://github.com/dying-will-bullet/donuts/archive/refs/tags/v0.1.0.tar.gz",
+           .hash = "1220bada42a79e3a368511af68dbc71c71f5dfc55844ed420f3a1637936ef99356a7",
+       },
+    },
+}
+```
+
+Add `donuts` as a module in `build.zig`:
+
+```diff
+diff --git a/build.zig b/build.zig
+index 957f625..d1a906c 100644
+--- a/build.zig
++++ b/build.zig
+@@ -15,6 +15,9 @@ pub fn build(b: *std.Build) void {
+     // set a preferred release mode, allowing the user to decide how to optimize.
+     const optimize = b.standardOptimizeOption(.{});
+
++    const opts = .{ .target = target, .optimize = optimize };
++    const donuts_module = b.dependency("donuts", opts).module("donuts");
++
+     const exe = b.addExecutable(.{
+         .name = "tmp",
+         // In this case the main source file is merely a path, however, in more
+@@ -23,6 +26,7 @@ pub fn build(b: *std.Build) void {
+         .target = target,
+         .optimize = optimize,
+     });
++    exe.addModule("donuts", donuts_module);
+
+     // This declares intent for the executable to be installed into the
+     // standard location when the user invokes the "install" step (the default
+```
 
 ## LICENSE
 
