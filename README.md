@@ -5,7 +5,7 @@
 
 Beautiful spinners for terminal.
 
-[![asciicast](https://asciinema.org/a/ZsXLUya4Ot2H1jGCf1e631Y8G.svg)](https://asciinema.org/a/ZsXLUya4Ot2H1jGCf1e631Y8G)
+[![asciicast](https://asciinema.org/a/591943.svg)](https://asciinema.org/a/591943)
 
 ## Examples
 
