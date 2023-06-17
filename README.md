@@ -117,7 +117,7 @@ pub fn main() !void {
 }
 ```
 
-![output](https://github.com/dying-will-bullet/donuts/assets/9482395/34cdeab7-8561-4d33-80f5-a20cbde02ccd)
+![output](https://github.com/dying-will-bullet/donuts/assets/9482395/4fc15a13-e57d-45b3-b211-978974b091cd)
 
 ## Installation
 
