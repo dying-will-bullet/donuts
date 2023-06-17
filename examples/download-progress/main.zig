@@ -20,5 +20,5 @@ pub fn main() !void {
         sp.setMessage(text[0 .. len + 50]);
         std.time.sleep(50 * std.time.ns_per_ms);
     }
-    try sp.stop(.{ .symbol = "✅", .message = "Finsihed." });
+    try sp.stop(.{ .symbol = "✅", .message = "Finished." });
 }
