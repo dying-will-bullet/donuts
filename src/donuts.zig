@@ -76,7 +76,7 @@ pub fn Donuts(comptime stream: anytype) type {
             return Self{
                 .message = message,
                 .frames = frames,
-                .frame_rate = @intCast(u64, interval) * time.ns_per_ms,
+                .frame_rate = @as(u64, @intCast(interval)) * time.ns_per_ms,
                 .lock = std.Thread.Mutex{},
                 .running_flag = std.atomic.Atomic(bool).init(false),
                 .sep = options.sep,
