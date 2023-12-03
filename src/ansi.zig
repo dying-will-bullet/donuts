@@ -173,8 +173,7 @@ pub const Style = struct {
 
 test "test to ansi" {
     const style = .{ .bold = true, .fg = .green, .bg = .red };
-
-    var buf = try testing.allocator.alloc(u8, 32);
+    const buf = try testing.allocator.alloc(u8, 32);
     defer testing.allocator.free(buf);
     const res = try Style.toAnsi(style, buf);
     try testing.expect(std.mem.eql(u8, res, "\x1b[32;41;1m"));
@@ -182,7 +181,7 @@ test "test to ansi" {
 
 test "test default" {
     const style = .{};
-    var buf = try testing.allocator.alloc(u8, 32);
+    const buf = try testing.allocator.alloc(u8, 32);
     defer testing.allocator.free(buf);
     const res = try Style.toAnsi(style, buf);
     try testing.expect(std.mem.eql(u8, res, "\x1b[39;49m"));
