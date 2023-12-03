@@ -126,6 +126,8 @@ pub fn main() !void {
 
 ## Installation
 
+### Zig 0.11
+
 Add `donuts` as dependency in `build.zig.zon`:
 
 ```
@@ -134,8 +136,8 @@ Add `donuts` as dependency in `build.zig.zon`:
     .version = "0.1.0",
     .dependencies = .{
        .donuts = .{
-           .url = "https://github.com/dying-will-bullet/donuts/archive/refs/tags/v0.1.0.tar.gz",
-           .hash = "1220bada42a79e3a368511af68dbc71c71f5dfc55844ed420f3a1637936ef99356a7",
+           .url = "https://github.com/dying-will-bullet/donuts/archive/refs/tags/v0.2.0.tar.gz",
+           .hash = "1220c47de7b9878c2aeb26ab20383482b0319f8ead60682dc1e47d0be2feef5588b6"
        },
     },
 }
@@ -167,6 +169,10 @@ index 957f625..d1a906c 100644
      // This declares intent for the executable to be installed into the
      // standard location when the user invokes the "install" step (the default
 ```
+
+### Zig 0.12 / nightly
+
+Please use the master branch.
 
 ## LICENSE
 
